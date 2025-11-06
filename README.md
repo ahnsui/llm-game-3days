@@ -1,5 +1,6 @@
 ﻿# 3 days: The Last Shelter
-<image src='images/main.jpg'/>
+<image src='images/main.jpg' width=700/>
+
 > LLM 기반 좀비 바이러스 감염자 판별 게임
 
 
@@ -71,3 +72,4 @@
 | **RunPod** | LLM 모델 호스팅 및 GPU 연산 환경 제공 |
 
 | **Hugging Face** | EEVE-Korean-10.8B LLM 모델 소스 및 레퍼런스 제공 |
+
