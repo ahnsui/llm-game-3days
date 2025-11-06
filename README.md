@@ -70,6 +70,4 @@
 | **Streamlit** | 웹 인터페이스 구현 |
 | **Ollama** | LLM 실행 환경 |
 | **RunPod** | LLM 모델 호스팅 및 GPU 연산 환경 제공 |
-
 | **Hugging Face** | EEVE-Korean-10.8B LLM 모델 소스 및 레퍼런스 제공 |
-
