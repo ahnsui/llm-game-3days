@@ -3,6 +3,7 @@ import random
 from ast import literal_eval
 import ollama
 from llm_game import generate_obs_prompt, non_infected_prompt, infected_prompt, r1_non_infected, r1_infected, r2_non_infected, r2_infected, r2_antibody
+import base64 # 오디오 처리를 위해 import 추가
 
 client = ollama.Client(host="http://localhost:11434")
 
@@ -15,6 +16,23 @@ def run_model(prompt, content):
         ]
     )
     return response['message']['content']
+
+# 오디오 재생
+@st.cache_data
+def get_audio_base64(file_path):
+    with open(file_path, "rb") as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+def autoplay_audio(audio_base64):
+    if audio_base64:
+        audio_html = f"""
+        <audio autoplay>
+            <source src="data:audio/mp3;base64,{audio_base64}" type="audio/mp3">
+            Your browser does not support the audio element.
+        </audio>
+        """
+        st.markdown(audio_html, unsafe_allow_html=True)
 
 class ZombieGame:
     def __init__(self):
@@ -90,6 +108,7 @@ if 'game' not in st.session_state:
     st.session_state.show_decision_buttons = False  # 결정 버튼 표시 여부
     st.session_state.day_clear = False              # Day 클리어 여부 플래그
     st.session_state.low_score_game_over = False    # 점수 미달 게임오버 플래그
+    st.session_state.sound_played = False           # 사운드 재생 플래그 추가
 
 game = st.session_state.game
 
@@ -97,24 +116,29 @@ st.title('3 days: The Last Shelter')
 
 # sidebar
 st.sidebar.markdown("### 조사관 매뉴얼")
-st.sidebar.warning("**[주의]**  \n단순 피로와 타박상은 생존자에게 흔한 증상입니다.  \n성급한 판단은 무고한 생명을 앗아갈 수 있습니다.")
+st.sidebar.warning("**[주의]** \n단순 피로와 타박상은 생존자에게 흔한 증상입니다.  \n성급한 판단은 무고한 생명을 앗아갈 수 있습니다.")
 st.sidebar.markdown("### 감염 의심 징후")
 st.sidebar.markdown("""
 <div style='background-color: white; padding: 15px; margin-bottom: 30px; border-radius: 5px; border-left: 4px solid #8b0000;'>
 
-**햇빛 기피**  
+**햇빛 기피**
+
 밝은 빛이나 햇빛에 노출되는 것을 본능적으로 회피
 
-**상처 은폐**  
+**상처 은폐** 
+
 물린 자국이나 상처를 숨기려는 이상 행동 패턴
 
-**체온 이상**  
+**체온 이상** 
+
 비정상적인 고열 증상
 
-**극심한 갈증**  
+**극심한 갈증** 
+
 심각한 탈수 증세, 물에 대한 비정상적 집착
 
-**공격성 증가**  
+**공격성 증가** 
+
 사소한 자극에도 과격하게 반응하는 경향
 
 </div>
@@ -135,6 +159,12 @@ if not st.session_state.game_started:
 
 # 게임 오버 화면
 elif game.game_over:
+    if not st.session_state.get('sound_played', False):
+        audio_base64 = get_audio_base64("zombie.mp3") 
+        if audio_base64:
+            autoplay_audio(audio_base64)
+            st.session_state.sound_played = True # 재생 완료 후 플래그 설정
+
     st.error(f"{st.session_state.decision_message}")
 
     if st.session_state.get('low_score_game_over', False):
@@ -143,7 +173,7 @@ elif game.game_over:
             
     elif "연구소" in st.session_state.decision_message:
         st.image("./images/gameover1.png")
-               
+                
     st.write(f"총 점수: {game.score}") # 점수 표시
 
     if st.button('Reset', type="primary"):
@@ -202,6 +232,7 @@ elif st.session_state.game_started:
                 st.session_state.show_decision_buttons = False
                 st.session_state.day_clear = False
                 st.session_state.low_score_game_over = False # 플래그 리셋
+                st.session_state.sound_played = False # 사운드 플래그 리셋
                 st.rerun()
         
         # 다음 생존자 (점수 5점 미만)
@@ -213,6 +244,7 @@ elif st.session_state.game_started:
                 st.session_state.show_decision_buttons = False
                 st.session_state.round_messages.append({'role': 'system', 'content': '다음 생존자가 문을 두드립니다.'})
                 st.session_state.low_score_game_over = False # 플래그 리셋
+                st.session_state.sound_played = False # 사운드 플래그 리셋
                 st.rerun()
             
     # 판별 기회가 남았을 때
