@@ -3,7 +3,7 @@ import random
 from ast import literal_eval
 import ollama
 from llm_game import generate_obs_prompt, non_infected_prompt, infected_prompt, r1_non_infected, r1_infected, r2_non_infected, r2_infected, r2_antibody
-import base64 # 오디오 처리를 위해 import 추가
+import base64
 
 client = ollama.Client(host="http://localhost:11434")
 
