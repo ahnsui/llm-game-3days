@@ -147,7 +147,7 @@ st.sidebar.markdown("""
 st.sidebar.markdown("**※ 모든 심문은 기록되며 감염 의심 시 즉각 격리 조치됩니다.**</small>", unsafe_allow_html=True)
 
 if not st.session_state.game_started:
-    st.image("./images/main.jpg", caption="당신은 이 쉘터의 유일한 희망입니다.")
+    st.image("./images/game_main.png", caption="당신은 이 쉘터의 유일한 희망입니다.")
     st.html("""
         <div style="font-size: 18px; line-height: 1.6;">
             당신은 전 세계 유일한 쉘터의 검문소 조사관입니다.<br>
@@ -169,11 +169,11 @@ elif game.game_over:
 
     if st.session_state.get('low_score_game_over', False):
         st.error("[Game Over] 쉘터에 좀비 바이러스가 퍼져 모든 인류가 사망했습니다.")
-        st.image("./images/gameover2.png")
-            
+        st.image("./images/game_over.png")
+    
     elif "연구소" in st.session_state.decision_message:
-        st.image("./images/gameover1.png")
-                
+        st.image("./images/game_over.png")
+            
     st.write(f"총 점수: {game.score}") # 점수 표시
 
     if st.button('Reset', type="primary"):
@@ -185,7 +185,7 @@ elif game.game_over:
 # 게임 클리어 화면
 elif game.game_clear:
     st.success('[승리] 인류는 좀비 바이러스를 전부 없애고 희망을 찾았습니다!')
-    st.image("./images/gameclear.png")
+    st.image("./images/game_clear.png")
     st.write(f"점수: {game.score}")
 
     if st.button('Reset'):
